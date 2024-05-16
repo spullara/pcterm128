@@ -1,0 +1,17 @@
+1000 PRINTCHR$(14)"{clear}Please Insert Copy of PC-TERM and Press a Key":GETKEYa$
+1100 OPEN15,8,15,"ij": nu$=CHR$(0):q$=CHR$(34)
+1105 IFdsTHENPRINT"{ct b}disk error: ";ds$:e=-1:GOTO1170
+1110 OPEN8,8,8,"#"
+1115 PRINT#15,"b-a 0 1 0"
+1120 f$="pcboot"
+1130 aa=LEN(f$)+DEC("b00")+15
+1135 al=aaAND255:ah=aa/256
+1140 PRINT#15,"b-p 8 0"
+1145 PRINT#8,"cbm";nu$;nu$;nu$;nu$;f$;nu$;nu$;
+1150 PRINT#8,CHR$(162);CHR$(al);CHR$(160);CHR$(ah);
+1155 PRINT#8,CHR$(76);CHR$(DEC("a5"));CHR$(DEC("af"));
+1160 PRINT#8,"?cH(147);:fast:open1,8,15,"+q$+"ui-"+q$+":close1:run";q$;"{sh -}pcboot *";nu$
+1165 PRINT#15,"u2:8 0 1 0"
+1170 CLOSE8:CLOSE15
+1180 PRINT"{clear}Done{.*3}{ct g}Load boot PC-Term?";:GETKEYa$:IFa$="y"THENDLOAD"{sh -}pcboot*"
+1190 PRINT"{clear}";:END
