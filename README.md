@@ -26,7 +26,7 @@ This file provides routines for managing the disk drive, including loading and s
 
 ### PC.ML4
 
-PC.ML4 contains routines for the user interface, such as displaying menus, getting user input, and updating the screen.
+PC.ML4 contains routines for increasing the disk speed. I had to remove this from pcboot to get it to run under the VICE emulator.
 
 ### PC.ML5
 
