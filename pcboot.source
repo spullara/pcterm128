@@ -1,0 +1,54 @@
+495 REM"{delete*9}{141}{ct g}
+500 REM"{delete*8}(c) 1987 pc-soft
+510 REM"{delete*8}written by sam pullara
+520 REM"{delete*8}all rights reserved
+530 REM"{delete*9}{141}{ct g}{141*3}
+1000 REM "pc-term128 boot"
+1005 FAST:GRAPHICCLR:GRAPHIC5
+1025 GOSUB1040
+1030 GOSUB2000
+1031 BLOAD"pc.ml4",p4864,u(dv%(1)):GRAPHIC0:PRINT"{clear}sys4864:goto1035"
+1032 POKE842,ASC("{home}"):POKE843,13:POKE208,2:END
+1035 GRAPHIC5:DLOAD"{sh -}pcterm{space*8}{sh -}",u(dv%(1)):END
+1040 dv%=1
+1045 TRAP1075:FORt=8TO13
+1050 p=1:GOSUB1080:IFp=1THENdv%(dv%)=t:dv%=dv%+1
+1055 NEXT:dv%=dv%-1
+1070 SLEEP1:RETURN
+1075 p=0:RESUMENEXT
+1080 OPEN1,t,15,"i0:":INPUT#1,a$:CLOSE1:RETURN
+2000 PRINTCHR$(14);
+2001 PRINT"{clear}{space*33}Now Booting{.*3}{space*21}"
+2005 PRINTCHR$(142);
+2010 PRINT"{ct o}";
+2015 PRINT"{space*11}UI
+2016 PRINT"{ct o}";
+2020 PRINT"{space*11}J{sh +}{sh asterisk*4}I{space*5}U{sh asterisk*2}{cm r}{sh asterisk*2}I{space*15}UI U{sh asterisk*2}IU{sh asterisk*2}I{space*9}UI
+2021 PRINT"{ct o}";
+2025 PRINT"{space*5}M N{space*4}{sh -}{space*4}{sh -}{space*8}{sh -}{space*19}{sh -}{space*4}{sh -*2}{space*2}{sh -}{space*10}{sh -}{space*2}M N
+2026 PRINT"{ct o}";
+2030 PRINT"{space*5}{sh asterisk}Q{sh asterisk}{space*4}{cm q}{sh asterisk*4}K{space*8}{sh -}{space*19}{sh -} U{sh asterisk*2}K{cm q}{sh asterisk*2}{cm w}{space*2}{cm m}{space*5}{cm g} {sh -}{space*2}{sh asterisk}Q{sh asterisk}
+2031 PRINT"{ct o}";
+2035 PRINT"{space*5}N M{space*4}{sh -}{space*2}U{sh asterisk*3}I {sh asterisk*2}{space*3}{sh -}{space*2}U{sh asterisk*2}I U{sh asterisk*2}I U{sh asterisk}{cm r}{sh asterisk}I{space*2}{sh -} {sh -}{space*3}{sh -}{space*2}{sh -}{space*2}{cm m}{space*5}{cm g} {sh -}{space*2}N M
+2036 PRINT"{ct o}";
+2040 PRINT"{space*12}{sh -}{space*2}{sh -}{space*10}{sh -}{space*2}{cm q}{sh asterisk*2}K {sh -}{space*4}{sh -} {sh -} {sh -}{space*2}{sh -} {sh -}{space*3}{sh -}{space*2}{sh -}{space*3}M{space*3}N{space*2}{sh -}
+2041 PRINT"{ct o}";
+2045 PRINT"{space*12}J{space*2}J{sh asterisk*3}K{space*5}J{cm e}K J{sh asterisk*2}K J{space*4}J{space*3}K J{cm e}KJ{sh asterisk*2}KJ{sh asterisk*2}K{space*4}J{sh asterisk}K{space*2}J{cm e}K
+2050 PRINTCHR$(14)"{down}{space*32}by Sam Pullara":PRINT:PRINTCHR$(143);
+2060 PRINT"{space*23}The {ct b}ULTIMATE"CHR$(130)" Terminal Program for"
+2065 PRINT"{space*31}The Commodore 128{space*18}"
+2070 PRINT"{space*31}Personal Computer{space*18}"
+2075 PRINT"{space*36}System{space*24}"
+2076 PRINT"{space*66}"
+2080 PRINT"
+2090 PRINT"
+2095 PRINT"
+2100 PRINT"
+2105 PRINT
+2110 PRINT"{space*5}Please send any comments,{space*15}PC-Soft
+2115 PRINT"{space*5}bugs, or modifications you{space*14}261 Lakeview Circle
+2120 PRINT"{space*5}may suggest to:{space*25}Kingsport,TN{space*2}37663
+2200 RETURN
+3000 SCRATCH"{sh -}pcboot{space*8}{sh -}"
+3005 DSAVE"{sh -}pcboot{space*8}{sh -}"
+3010 END
