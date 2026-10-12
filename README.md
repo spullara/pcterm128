@@ -26,7 +26,7 @@ Loads at $0E00. This file provides routines for file and capture-buffer I/O: it 
 
 ### PC.ML4
 
-Loads at $1300. PC.ML4 contains routines for increasing the disk speed (a fast loader for the 1541). I had to remove this from pcboot to get it to run under the VICE emulator.
+Loads at $1300. PC.ML4 contains routines for increasing the disk speed (a fast loader for the 1541). I had to remove this from pcboot to get it to run under the VICE emulator. pcboot loads it at $1300 and enables it with SYS 4864 before it loads pcterm.
 
 ### PC.ML5
 
@@ -38,19 +38,24 @@ Loads at $2A00. PC.ML6 is a memory image (a BSAVE of $2A00-$377F). It holds a te
 
 ## Operation
 
-When PC-Term 128 is started, it initializes the hardware and software state, loads the necessary machine language routines, and displays the main menu.
+When PC-Term 128 is started, it sets up the 80-column screen, finds the disk drives, opens the RS-232 channel, loads the configuration, function keys, phonebook, machine language routines and character set, and sets the baud rate. Then it runs the auto macro (mcr.Auto) if the disk has one, and displays the main menu.
 
-From the main menu, the user can select various operations:
+The main menu has these options:
 
-- Dialing a number from the phonebook
-- Manually dialing a number
-- Changing terminal settings (baud rate, parity, duplex, etc)
-- Sending and receiving files using Punter or Xmodem protocols
-- Accessing disk commands (directory, send, receive, etc)
-- Hanging up the modem
+- Wait for Call, Call a Number, Hang-Up and Pick-Up
+- Terminal Mode and Direct Connect
+- Disk Options (directory, disk commands, file stats, change drive, read file, Comscii/Ascii, file copier)
+- Wardialer
+- Baud (110 to 2400)
+- Download, Upload and Toggle Protocol (Punter or Xmodem)
+- Phonebook (call, autodial, change, erase and add numbers, multi-dial, load and save the phonebook)
+- Redial
+- Macro-Mode
+- Configure Menu (dial type, modem, pulse speed, function keys, block size, config file, character set, colors, and modem parameters such as parity, word length, stop bits and handshake)
+- Multi-Transfer (Punter only)
 
-When a connection is established, the terminal enters its online mode. In this mode, characters typed on the keyboard are sent to the remote system, and data received from the remote system is displayed on the screen. Special control characters (like CTRL-C for breaking the connection) are intercepted and handled by the terminal software.
+When a connection is established, the terminal enters its online mode. In this mode, characters typed on the keyboard are sent to the remote system, and data received from the remote system is displayed on the screen. Duplex and Ascii/Comscii mode are set in this mode. The terminal loop returns to BASIC when ALT or HOME is pressed or when the capture buffer is full. HOME goes back to the main menu. ALT plus a key runs a terminal command, for example duplex, capture buffer, upload, download, pick-up and hang-up (Alt-? shows the list). Other control characters, such as CTRL-C, are not intercepted: they are sent to the remote system.
 
 File transfers are initiated from the menus and are handled by the Punter or Xmodem routines in PC.ML, which send and receive the data through the RS-232 port.
 
-Throughout its operation, PC-Term 128 makes extensive use of the Commodore 128's hardware features, including the VIC-II chip for screen handling, the CIA chips for RS-232 serial communication and timing, and the KERNAL ROM routines for disk and keyboard I/O.
+Throughout its operation, PC-Term 128 makes extensive use of the Commodore 128's hardware features, including the 8563 VDC chip for the 80-column screen, CIA 2 (the user port) for the RS-232 port and the modem control lines (carrier, ring and off-hook), the SID chip for tone dialing, and the KERNAL ROM routines for RS-232, disk and keyboard I/O. The KERNAL RS-232 driver uses CIA 2 timer NMIs to send and receive the bits.
