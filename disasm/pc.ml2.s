@@ -24,6 +24,33 @@
 ; Capture buffer: bank 1 RAM from $8000; next free byte pointer in
 ;   zero page $FA/$FB (BASIC: POKE250,0:POKE251,128). Full when the
 ;   high byte reaches $FF (that is, at $FF00).
+;
+; Known issues and history
+; ------------------------
+; 1. Half-duplex translation skip (CheckKey). In Ascii mode with half
+;    duplex, typed keys go to the modem untranslated: case is swapped
+;    and DEL is not mapped to backspace. Probable reason: the same byte
+;    is echoed locally, and a translated byte would show wrong on the
+;    screen. A fix would translate only the byte sent to the modem and
+;    echo the original key.
+; 2. Buffer-full exit (receive path, BufStore/BufFull). The byte that hits
+;    the limit is neither stored nor printed. The routine returns without
+;    CLRCHN, so the modem stays the input channel. Capacity is $8000-$FEFF
+;    in bank 1 (32,512 bytes): about 18 minutes of steady text at 300
+;    baud, about 4.5 minutes at 1200 baud.
+; 3. BufStore page-wrap test ("cpx BUFPTR"). It depends on INDSTA leaving
+;    X = $00 in BANK 15. This is not documented, but it is always true on
+;    the stock C128 KERNAL. A plain "bne" after "inc BUFPTR" would not
+;    depend on it. pc.ml3 has the same routine at $0E5B.
+; 4. Shared ASCTAB for both directions. This is not a bug. pc.ascii swaps
+;    a-z/A-Z both ways, maps $C1-$DA to A-Z and swaps $14/$08, so one
+;    table works for send and receive. (BASIC side: line 3395 uses a
+;    second table at $1500. In pc.ascii that page holds only filler,
+;    mostly $00/$FF, not a translation table.)
+; 5. History (author's note). PC-Term was written by Sam Pullara in about
+;    1984, in 8th grade. Half-duplex hosts were uncommon, so issue 1 was
+;    probably never noticed. The capture buffer probably seldom or never
+;    filled, so issue 2 likely never showed.
 ; =============================================================================
 
         .setcpu "6502"
@@ -72,7 +99,8 @@ ST_RXEMPTY = $08                ; RS-232 status bit: receive buffer empty
 ;               BASIC line 4600 checks PEEK(3070)=255 AND PEEK(3071)=1).
 ;           Bytes received are stored in bank 1 at (BUFPTR) when BUFOPEN=1.
 ; Note    : On the "buffer full" exit the routine returns with the modem
-;           still selected as input channel (no CLRCHN). ; ?
+;           still selected as input channel (no CLRCHN). See known
+;           issue 2 in the file header.
 ; -----------------------------------------------------------------------------
 TermLoop:
         jsr     CLRCHN
@@ -95,7 +123,7 @@ TermLoop:
         ldy     CHRMODE
         cpy     #$01            ; CHRMODE=1: show the byte as it is
         beq     @noxlat
-        tax                     ; else translate through ASCTAB  ; ? ASCII->PETSCII
+        tax                     ; else translate through ASCTAB (issue 4)
         lda     ASCTAB,x
 @noxlat:
         ldx     BUFOPEN
@@ -104,7 +132,7 @@ TermLoop:
         jsr     BufStore
         ldx     #$FF
         cpx     BUFFULL         ; buffer became full -> back to BASIC
-        beq     BufRts
+        beq     BufRts          ; known issue 2: byte not shown, no CLRCHN
 @show:
         jsr     CHROUT          ; output goes to the screen (default)
 ; ---- keyboard -> modem
@@ -123,9 +151,9 @@ CheckKey:
         beq     @send           ; Commodore mode: no translation
         ldy     DUPLEX
         cpy     #$01
-        beq     @send           ; half duplex: no translation  ; ? odd, but what the code does
+        beq     @send           ; half duplex: no translation (known issue 1)
         tax
-        lda     ASCTAB,x        ; ? same table as for receive
+        lda     ASCTAB,x        ; same table as receive (issue 4: not a bug)
 @send:
         jsr     CHROUT          ; to the modem
         pha
@@ -147,11 +175,13 @@ Exit:
 ; Purpose : Append one byte to the capture buffer in bank 1.
 ; Inputs  : A = byte (0 is not stored); BUFPTR/BUFPTRH = next free address.
 ; Outputs : byte stored at (BUFPTR) in bank 1, pointer advanced.
-;           If BUFPTRH = $FF the byte is dropped and BUFFULL is set to $FF.
+;           If BUFPTRH = $FF the byte is dropped and BUFFULL is set to $FF
+;           (known issue 2).
 ; Clobbers: A, X, Y
 ; Note    : After INDSTA, X holds the previous MMU configuration, which is
 ;           $00 in BANK 15, so "cpx BUFPTR" tests for the low byte
-;           wrapping to $00. ; ? relies on KERNAL STASH internals
+;           wrapping to $00. This relies on KERNAL internals; see
+;           known issue 3 in the file header.
 ;           The same routine is in pc.ml3 ($0E5B).
 ; -----------------------------------------------------------------------------
 BufStore:
@@ -166,7 +196,7 @@ BufStore:
         ldy     #$00
         jsr     INDSTA
         inc     BUFPTR
-        cpx     BUFPTR          ; X = $00 here (see note) ; ?
+        cpx     BUFPTR          ; X = $00 here (known issue 3)
         beq     @inchi
         rts
 @inchi:

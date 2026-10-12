@@ -48,6 +48,7 @@ translation table pc.ascii at $1400.
   the capture buffer if capture is on, and printed; a typed key is
   translated, sent to the modem, and echoed in half duplex. LF and $8E from
   the modem are dropped. Returns to BASIC on ALT, HOME, or buffer full.
+  Known issues and history are listed in the pc.ml2.s file header.
 - **pc.ml3 - file and capture-buffer I/O.** Not a directory or load/save
   module. Uses logical file 1, opened by BASIC: ShowFile types a file on the
   screen; LoadBuffer appends a file to the capture buffer; SendBuffer writes
