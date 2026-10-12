@@ -49,7 +49,7 @@
 ;                  with work area $3800-$381E, buffers $3900/$3A00 and
 ;                  vectors $3B00-$3B03 (all outside this file).
 ;                  Differences to pc.ml (besides the addresses): only 7
-;                  dispatcher entries (pc.ml has 11), WaitCode timeout
+;                  dispatcher entries (pc.ml has 8), WaitCode timeout
 ;                  #$14 (pc.ml #$30), abort test SHFLAG=2 / C= key
 ;                  (pc.ml: LSTX $D5 = $48), buffers at $3900/$3A00
 ;                  (pc.ml: $0500/$0600). Which build is older is unknown.

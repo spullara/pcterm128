@@ -16,7 +16,7 @@
 ;
 ; Entry points:
 ;   $1600 VdcWrite  - write A to VDC register X
-;   $160B VdcReset  - clear VDC update address and write $00 (no caller found)
+;   $160C VdcReset  - clear VDC update address and write $00 (no caller found)
 ;   $1627 PrintAt   - put a BASIC string on the screen without moving
 ;                     the cursor (SYS from line 8000)
 ; =============================================================================
@@ -61,7 +61,7 @@ VdcWrite:
         rts
 
 ; -----------------------------------------------------------------------------
-; VdcReset - $160B (no BASIC caller found)
+; VdcReset - $160C (no BASIC caller found)
 ; Purpose : Set the VDC update address to $0000, write one $00 byte
 ;           through the data register (VDC RAM $0000 = 0), then set the
 ;           update address high byte to $00 again. ; ? exact purpose unknown

@@ -2,6 +2,17 @@
 
 Each section below is written by a different task.
 
+### Overview (all six files; details in each section)
+
+| File | Load (PRG header) | End | Size (code) | Main entry points | Loaded by (BASIC) |
+|------|------|-----|-------------|-------------------|-------------------|
+| pc.ml  | $2000 | $36EF | 5872 | $209F, $20A5-$20BA, $20ED/$20F1 (`xc`) | pcterm 715 |
+| pc.ml2 | $0B00 | $0BA4 | 165 | $0B00 (SYS2816) | pcterm 727 |
+| pc.ml3 | $0E00 | $0EC7 | 200 | $0E00, $0E03, $0E7B | pcterm 728 |
+| pc.ml4 | $1300 | $16D0 | 977 | $1300 (SYS4864), $1303 (SYS4867) | pcboot 1031 |
+| pc.ml5 | $1600 | $1679 | 122 | $1627 | none found |
+| pc.ml6 | $2A00 | $377F | 3456 | $2F00, $2AF0, $3000 | pcterm 716 (dead code) |
+
 <!-- BEGIN section: small ML files (pc.ml2, pc.ml3, pc.ml4, pc.ml5) -->
 ## Small ML files: pc.ml2, pc.ml3, pc.ml4, pc.ml5
 
@@ -22,7 +33,7 @@ Comments marked `; ?` are uncertain.
 | pc.ml2 | $0B00-$0BA4 | 165 | $0B00 TermLoop | pcterm 727 BLOAD; 4600 `SYS2816` |
 | pc.ml3 | $0E00-$0EC7 | 200 | $0E00 ShowFile, $0E03 LoadBuffer, $0E29 ClearLoad, $0E7B SendBuffer | pcterm 728 BLOAD; `SYS3584` (4510), `SYS3587` (3935, 4845), `SYS3707` (3780, 3785, 4860); $0E29 has no caller |
 | pc.ml4 | $1300-$16D0 | 977 | $1300 Enable, $1303 Disable, $135C TurboLoad (via ILOAD) | pcboot 1031 BLOAD + `sys4864`; pcterm 0 `sys4867` if PEEK(4906)=67 |
-| pc.ml5 | $1600-$1679 | 122 | $1600 VdcWrite, $160B VdcReset, $1627 PrintAt | pcterm 8000 `SYSDEC("1627")`; no BLOAD found |
+| pc.ml5 | $1600-$1679 | 122 | $1600 VdcWrite, $160C VdcReset, $1627 PrintAt | pcterm 8000 `SYSDEC("1627")`; no BLOAD found |
 
 Shared data used by pc.ml2/pc.ml3: $0BFC duplex (POKE3068), $0BFD
 character mode (POKE3069), $0BFE buffer full = $FF (3070), $0BFF capture on
@@ -117,7 +128,7 @@ Outside the file the Punter code uses $3800-$381E (work area), $3900-$3AFF
 - **Punter part ($3000-$3736):** the same routines as pc.ml (WaitCode,
   RecvFile, SendFile, RecvType, SendType, DumbTerm, WaitTx, HookBsout),
   assembled for $3000. Differences besides the addresses: 7 dispatcher
-  entries (pc.ml has 11), another timeout value, the C= key as abort key,
+  entries (pc.ml has 8), another timeout value, the C= key as abort key,
   and buffers at $3900/$3A00.
 <!-- END section: pc.ml6 -->
 
@@ -168,6 +179,7 @@ code and some buffer tools:
   send/print with echo wait ($295E), file type/load to buffer, a small
   ASCII "chat" terminal, and a VDC full-screen buffer viewer/editor
   ($2F46-$36EE) with cursor keys, page up/down, delete, insert, block cut.
-- Open questions: the macro slots jump to $3743 (outside pc.ml); BASIC line
-  716 loads pc.ml6 with `p8192` ($2000), on top of pc.ml.
+- Open questions: the macro slots jump to $3743 (outside pc.ml). BASIC line
+  716 would load pc.ml6 with `p8192` ($2000), on top of pc.ml, but it does
+  not run: after line 715 loads pc.ml, PEEK(9000)=6 (see the pc.ml6 section).
 <!-- END section: pc.ml -->
