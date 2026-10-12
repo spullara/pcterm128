@@ -26,7 +26,7 @@ Loads at $0E00. This file provides routines for file and capture-buffer I/O: it 
 
 ### PC.ML4
 
-Loads at $1300. PC.ML4 contains routines for increasing the disk speed (a fast loader for the 1541). I had to remove this from pcboot to get it to run under the VICE emulator. pcboot loads it at $1300 and enables it with SYS 4864 before it loads pcterm.
+Loads at $1300. PC.ML4 contains routines for increasing the disk speed (a fast loader for the 1541). I had to remove this from pcboot to get it to run under the VICE emulator. Note: the pcboot and pcboot.source files in this repository still load it at $1300 and run SYS 4864 before they load pcterm.
 
 ### PC.ML5
 
